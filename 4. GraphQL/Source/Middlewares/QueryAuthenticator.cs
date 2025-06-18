@@ -37,10 +37,6 @@ public class QueryAuthorizeMiddleware
 					.Build());
 		}
 
-		// You can also check claims, roles, headers, etc.
-		// Example:
-		// if (!httpContext.User.IsInRole("Admin")) { ... }
-
 		await _next(context);
 	}
 }

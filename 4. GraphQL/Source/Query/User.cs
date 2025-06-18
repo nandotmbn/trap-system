@@ -1,4 +1,5 @@
 using Domain.Models;
+using GraphQL.Middlewares;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ public class UserQuery
   [UseProjection]
   [UseFiltering]
   [UseSorting]
+  [QueryAuthorize]
   public IQueryable<User> GetUsers(AppDBContext appDBContext)
   {
     var query = appDBContext.Users.AsQueryable();
@@ -18,6 +20,7 @@ public class UserQuery
   }
 
   [UseProjection]
+  [QueryAuthorize]
   public async Task<User?> GetUserAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
   {
     return await appDBContext.Users.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;

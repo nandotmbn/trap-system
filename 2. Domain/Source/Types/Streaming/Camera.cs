@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.Net;
+using Domain.Models;
 
-namespace Domain.Models
+namespace Domain.Types
 {
-	public class Camera : Mandatory
-	{
-		[Key]
-		public Guid Id { get; set; } = Guid.NewGuid();
-		[Required, MaxLength(20)]
+  public class CameraRequest
+  {
+    [Required, MaxLength(20)]
 		public string Name { get; set; } = string.Empty;
 		
 		// For Camera
@@ -19,10 +18,8 @@ namespace Domain.Models
 		public string? Password { get; set; } = string.Empty;
 
 		public Guid SubstationId { get; set; }
-		[JsonIgnore]
-		public Substation? Substation { get; set; }
+  }
 
-		[JsonIgnore]
-		public List<Detection> Detections { get; set; } = [];
-	}
+  public record CameraResponse(HttpStatusCode StatusCode, string Message, Camera Data);
+  public record CamerasResponse(HttpStatusCode StatusCode, string Message, List<Camera> Data);
 }

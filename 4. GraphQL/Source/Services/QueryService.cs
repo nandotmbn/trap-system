@@ -15,6 +15,9 @@ public static class QueryContainer
       .AddType<UserDescriptor>()
 
       .AddTypeExtension<CameraQuery>()
+
+      .AddTypeExtension<SubstationQuery>()
+
       .AddProjections()
       .AddFiltering()
       .AddSorting()
