@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  psql:
+    image: psql
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 4610:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "4620:6379"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "4630:5672"   # RabbitMQ AMQP protocol port
+      - "14630:15672" # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitplntrapuser
+      RABBITMQ_DEFAULT_PASS: rabbitplntrappassword
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  pg_data:
+  pg_data1:
+  pg_data2:
+  pg_data3:
+  pg_data4:
+  redis_data:
+  rabbitmq_data:
