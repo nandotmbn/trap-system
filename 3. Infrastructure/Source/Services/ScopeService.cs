@@ -24,7 +24,8 @@ namespace Infrastructure.Services
 			services.AddScoped<IAuth, AuthRepository>();
 			services.AddScoped<IMine, MineRepository>();
 			services.AddScoped<ISubstation, SubstationRepository>();
-			services.AddScoped<ICamera, CameraRepository>();
+			services.AddScoped<ITicket, TicketRepository>();
+			services.AddScoped<IChat, ChatRepository>();
 
 			return services;
 		}

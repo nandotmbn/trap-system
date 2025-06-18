@@ -6,6 +6,7 @@ namespace Domain.Models
 	[JsonConverter(typeof(JsonStringEnumConverter<TicketStatus>))]
 	public enum TicketStatus
 	{
+		Pending,
 		Safe,
 		Standby,
 		Critical
@@ -16,7 +17,7 @@ namespace Domain.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 		public bool IsOpen { get; set; } = true;
-		public TicketStatus Status { get; set; } = TicketStatus.Safe;
+		public TicketStatus Status { get; set; } = TicketStatus.Pending;
 		public string GeneratedReportUrl { get; set; } = string.Empty;
 
 		public Guid OperatorId { get; set; }
