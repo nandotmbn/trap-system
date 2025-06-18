@@ -7,6 +7,8 @@ using Infrastructure.Database;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+namespace Infrastructure.Repositories;
+
 public class SubstationRepository(AppDBContext appDBContext) : ISubstation
 {
   async public Task<Substation> Create(SubstationRequest request)

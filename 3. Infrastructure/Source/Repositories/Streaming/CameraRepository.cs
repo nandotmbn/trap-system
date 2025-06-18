@@ -7,6 +7,8 @@ using Infrastructure.Database;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
+namespace Infrastructure.Repositories;
+
 public class CameraRepository(AppDBContext appDBContext) : ICamera
 {
   async public Task<Camera> Create(CameraRequest request)

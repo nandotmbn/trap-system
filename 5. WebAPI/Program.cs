@@ -6,17 +6,20 @@ using WebAPI.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+	options.AddSchemaTransformer<JsonStringEnumSchemaTransformer>();
+});
 builder.Services.AddCors(options =>
-				{
-					options.AddDefaultPolicy(builder =>
-					{
-						builder
-							.AllowAnyOrigin()
-							.AllowAnyHeader()
-							.AllowAnyMethod();
-					});
-				});
+	{
+		options.AddDefaultPolicy(builder =>
+		{
+			builder
+				.AllowAnyOrigin()
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		});
+	});
 
 builder.Services.ScopeService(builder.Configuration);
 builder.Services.DatabaseServices(builder.Configuration);

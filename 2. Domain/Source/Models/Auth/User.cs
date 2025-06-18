@@ -3,7 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
-	public enum UserType {
+	[JsonConverter(typeof(JsonStringEnumConverter<UserType>))]
+	public enum UserType
+	{
 		Admin,
 		Operator,
 		Supervisor,

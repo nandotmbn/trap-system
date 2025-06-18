@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
+	[JsonConverter(typeof(JsonStringEnumConverter<TicketStatus>))]
 	public enum TicketStatus
 	{
 		Safe,

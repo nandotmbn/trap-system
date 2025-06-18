@@ -8,6 +8,7 @@ namespace Infrastructure.Interfaces
   {
     Task<User> MyProfile();
     Task<UserResponse> MyProfile(Guid userId);
-    Task<UserResponse> ChangeMyPassword(ChangePasswordUserRequest request);
+    Task<UserResponse> ChangeMyProfile(SelfRequest request);
+    Task<UserResponse> ChangeMyPassword(ChangePasswordRequest request);
   }
 }

@@ -1,7 +1,9 @@
-using System;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Reflection;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi.Models;
 
 public class EnumConverter : JsonConverter<Enum>
 {
@@ -22,5 +24,21 @@ public class EnumConverter : JsonConverter<Enum>
     {
         // Write the enum as a string
         writer.WriteStringValue(value.ToString());
+    }
+}
+
+public class JsonStringEnumSchemaTransformer : IOpenApiSchemaTransformer
+{
+    public Task TransformAsync(OpenApiSchema schema, OpenApiSchemaTransformerContext context, CancellationToken cancellationToken)
+    {
+        if (context.JsonTypeInfo.Type.IsEnum)
+        {
+            var jsonStringEnumConverter = context.JsonTypeInfo.Type.GetCustomAttributes<JsonConverterAttribute>(false).FirstOrDefault()?.ConverterType;
+            if (jsonStringEnumConverter is not null && jsonStringEnumConverter.IsGenericType && jsonStringEnumConverter.GetGenericTypeDefinition() == typeof(JsonStringEnumConverter<>)) 
+            {
+                schema.Type = "string";
+            }
+        }
+        return Task.CompletedTask;
     }
 }
