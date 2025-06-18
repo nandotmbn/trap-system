@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\4. GraphQL\GraphQL.csproj" />
     <ProjectReference Include="..\5. WebAPI\WebAPI.csproj" />
+    <ProjectReference Include="..\6. EventDriven\EventDriven.csproj" />
   </ItemGroup>
 
 </Project>
