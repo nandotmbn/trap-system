@@ -11,12 +11,20 @@ public static class QueryContainer
       .AddGraphQLServer()
       .AddQueryType<Query>()
 
-      .AddTypeExtension<UserQuery>()
-      .AddType<UserDescriptor>()
-
       .AddTypeExtension<CameraQuery>()
 
+      .AddTypeExtension<ChatQuery>()
+
+      .AddTypeExtension<ClassificationQuery>()
+
+      .AddTypeExtension<DetectionQuery>()
+
       .AddTypeExtension<SubstationQuery>()
+
+      .AddTypeExtension<TicketQuery>()
+
+      .AddTypeExtension<UserQuery>()
+      .AddType<UserDescriptor>()
 
       .AddProjections()
       .AddFiltering()
