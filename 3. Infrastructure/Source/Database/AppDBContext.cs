@@ -22,6 +22,7 @@ namespace Infrastructure.Database
 		public required DbSet<Classification> Classifications { get; set; }
 		public required DbSet<Ticket> Tickets { get; set; }
 		public required DbSet<Chat> Chats { get; set; }
+		public required DbSet<ContentDelivery> ContentDeliveries { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

@@ -2,6 +2,7 @@ using Scalar.AspNetCore;
 using Infrastructure.Services;
 using WebAPI.Middlewares;
 using WebAPI.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
@@ -43,6 +44,14 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllers();
 app.MapDefaultEndpoints();
+
+app.UseStaticFiles();
+string rootFolder = Path.Combine(builder.Environment.ContentRootPath, "CDN");
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(rootFolder),
+	RequestPath = "/CDN"
+});
 
 app.UseMiddleware<TransactionRollbackMiddleware>();
 app.Run();

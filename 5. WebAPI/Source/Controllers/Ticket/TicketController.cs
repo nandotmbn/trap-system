@@ -32,7 +32,7 @@ public class TicketController(ITicket ticket) : ControllerBase
   }
 
   [HttpPut("{ticketId}/status")]
-  public async Task<ActionResult<TicketResponse>> ChangeTicketStatus([FromRoute] Guid ticketId, [FromRoute] TicketStatusRequest request)
+  public async Task<ActionResult<TicketResponse>> ChangeTicketStatus([FromRoute] Guid ticketId, [FromBody] TicketStatusRequest request)
   {
     var result = await ticket.ChangeTicketStatus(ticketId, request);
     return Accepted(result);

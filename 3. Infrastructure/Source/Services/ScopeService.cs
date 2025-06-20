@@ -26,6 +26,7 @@ namespace Infrastructure.Services
 			services.AddScoped<ISubstation, SubstationRepository>();
 			services.AddScoped<ITicket, TicketRepository>();
 			services.AddScoped<IChat, ChatRepository>();
+			services.AddScoped<IContentDelivery, ContentDeliveryRepository>();
 
 			return services;
 		}

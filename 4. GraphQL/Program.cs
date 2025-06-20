@@ -4,7 +4,16 @@ using GraphQL.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
-// Add Database Service with PostgreSQL sharding
+builder.Services.AddCors(options =>
+  {
+    options.AddDefaultPolicy(builder =>
+    {
+      builder
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+  });
 builder.Services.DatabaseServices(builder.Configuration);
 builder.Services.AuthenticationService(builder.Configuration);
 builder.Services.QueryService(builder.Configuration);
@@ -14,6 +23,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 app.MapGraphQL();
 app.MapDefaultEndpoints();
 

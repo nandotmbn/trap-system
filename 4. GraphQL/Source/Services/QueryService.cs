@@ -7,6 +7,7 @@ public static class QueryContainer
 {
   public static IServiceCollection QueryService(this IServiceCollection services, IConfiguration configuration)
   {
+
     services
       .AddGraphQLServer()
       .AddQueryType<Query>()
@@ -17,6 +18,8 @@ public static class QueryContainer
 
       .AddTypeExtension<ClassificationQuery>()
 
+      .AddTypeExtension<ContentDeliveryQuery>()
+
       .AddTypeExtension<DetectionQuery>()
 
       .AddTypeExtension<SubstationQuery>()
@@ -24,13 +27,19 @@ public static class QueryContainer
       .AddTypeExtension<TicketQuery>()
 
       .AddTypeExtension<UserQuery>()
-      .AddType<UserDescriptor>()
 
       .AddProjections()
       .AddFiltering()
       .AddSorting()
-      .AddDbContextCursorPagingProvider();
-
+      .AddDbContextCursorPagingProvider()
+      .ModifyCostOptions(options =>
+      {
+        options.MaxFieldCost = 1_000_000;
+        options.MaxTypeCost = 1_000_000;
+        options.EnforceCostLimits = true;
+        options.ApplyCostDefaults = true;
+        options.DefaultResolverCost = 10.0;
+      });
     return services;
   }
-} 
+}

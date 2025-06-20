@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250619154156_1.1.0")]
+    partial class _110
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,34 +141,6 @@ namespace WebAPI.Migrations
                     b.HasIndex("DetectionId");
 
                     b.ToTable("Classifications");
-                });
-
-            modelBuilder.Entity("Domain.Models.ContentDelivery", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsArchived")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Permalink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContentDeliveries");
                 });
 
             modelBuilder.Entity("Domain.Models.Detection", b =>
@@ -316,14 +291,14 @@ namespace WebAPI.Migrations
                         new
                         {
                             Id = new Guid("00595b4e-6996-49ec-b197-2744ad7d53fb"),
-                            CreatedAt = new DateTime(2025, 6, 19, 23, 39, 24, 192, DateTimeKind.Utc).AddTicks(4870),
+                            CreatedAt = new DateTime(2025, 6, 19, 15, 41, 55, 54, DateTimeKind.Utc).AddTicks(6990),
                             FirstName = "PLN Security",
                             IsArchived = false,
                             LastName = "Super Admin",
-                            Password = "$2a$11$aGO5PeK112k4HqYq8ChBHuCRpOWTd8ngQauR8nZDK0cxnkm9geE9O",
+                            Password = "$2a$11$WO3fmHCsAhoYH/J.RkQlSO41hJhD1qOwwtYj91r1gspVdzLl67fvO",
                             PhoneNumber = "",
                             Type = 0,
-                            UpdatedAt = new DateTime(2025, 6, 19, 23, 39, 24, 192, DateTimeKind.Utc).AddTicks(4870),
+                            UpdatedAt = new DateTime(2025, 6, 19, 15, 41, 55, 54, DateTimeKind.Utc).AddTicks(6990),
                             Username = "trapadmin"
                         });
                 });
