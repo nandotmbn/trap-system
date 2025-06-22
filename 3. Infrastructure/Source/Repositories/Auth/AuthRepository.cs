@@ -48,6 +48,7 @@ public class AuthRepository(IConfiguration configuration, AppDBContext appDBCont
         LastName = request!.LastName,
         Username = request!.Username,
         PhoneNumber = request!.PhoneNumber,
+        Type = request!.Type,
         Password = BCrypt.Net.BCrypt.HashPassword(request!.Password),
       };
 
