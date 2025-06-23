@@ -13,11 +13,15 @@ public class TicketQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<Ticket> GetTickets(AppDBContext appDBContext)
-	{
-		var query = appDBContext.Tickets.AsQueryable();
-		return query;
-	}
+	public IQueryable<Ticket> GetTickets(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.Tickets.AsQueryable();
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]

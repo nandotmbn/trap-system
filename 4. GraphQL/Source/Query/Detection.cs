@@ -13,11 +13,20 @@ public class DetectionQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<Detection> GetDetections(AppDBContext appDBContext)
-	{
-		var query = appDBContext.Detections.AsQueryable();
-		return query;
-	}
+	public IQueryable<Detection> GetDetections(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.Detections.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Camera!.Name!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]

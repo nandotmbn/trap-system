@@ -13,11 +13,20 @@ public class SubstationQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<Substation> GetSubstations(AppDBContext appDBContext)
-	{
-		var query = appDBContext.Substations.AsQueryable();
-		return query;
-	}
+	public IQueryable<Substation> GetSubstations(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.Substations.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Name!.ToLower() + " " + x.Address!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]

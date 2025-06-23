@@ -13,11 +13,20 @@ public class ContentDeliveryQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<ContentDelivery> GetContentDeliveries(AppDBContext appDBContext)
-	{
-		var query = appDBContext.ContentDeliveries.AsQueryable();
-		return query;
-	}
+	public IQueryable<ContentDelivery> GetContentDeliveries(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.ContentDeliveries.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Title!.ToLower() + " " + x.Permalink!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]

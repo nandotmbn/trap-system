@@ -13,11 +13,20 @@ public class ChatQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<Chat> GetChats(AppDBContext appDBContext)
-	{
-		var query = appDBContext.Chats.AsQueryable();
-		return query;
-	}
+	public IQueryable<Chat> GetChats(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.Chats.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Message!.ToLower() + " " + x.Image!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]

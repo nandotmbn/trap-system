@@ -13,11 +13,20 @@ public class ClassificationQuery
 	[UseFiltering]
 	[UseSorting]
 	[QueryAuthorize]
-	public IQueryable<Classification> GetClassifications(AppDBContext appDBContext)
-	{
-		var query = appDBContext.Classifications.AsQueryable();
-		return query;
-	}
+	public IQueryable<Classification> GetClassifications(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  {
+    int? itemsToSkip = (page - 1) * limit;
+    
+    var query = appDBContext.Classifications.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Prediction!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    query = query.Skip((int)itemsToSkip!).Take(limit);
+
+    return query;
+  }
 
 	[UseProjection]
 	[QueryAuthorize]
