@@ -8,11 +8,10 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class SubstationQuery
 {
-	[UsePaging(IncludeTotalCount = true)]
 	[UseProjection]
-	[UseFiltering]
-	[UseSorting]
-	[QueryAuthorize]
+  [UseSorting]
+  [UseFiltering]
+  [QueryAuthorize]
 	public IQueryable<Substation> GetSubstations(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
   {
     int? itemsToSkip = (page - 1) * limit;

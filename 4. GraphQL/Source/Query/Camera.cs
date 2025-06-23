@@ -8,7 +8,6 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class CameraQuery
 {
-	[UsePaging(IncludeTotalCount = true)]
 	[UseProjection]
 	[UseFiltering]
 	[UseSorting]

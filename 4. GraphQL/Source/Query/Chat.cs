@@ -7,12 +7,11 @@ namespace GraphQL.Source;
 
 [ExtendObjectType(typeof(Query))]
 public class ChatQuery
-{
-	[UsePaging(IncludeTotalCount = true)]
+{	
 	[UseProjection]
-	[UseFiltering]
-	[UseSorting]
-	[QueryAuthorize]
+  [UseSorting]
+  [UseFiltering]
+  [QueryAuthorize]
 	public IQueryable<Chat> GetChats(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
   {
     int? itemsToSkip = (page - 1) * limit;

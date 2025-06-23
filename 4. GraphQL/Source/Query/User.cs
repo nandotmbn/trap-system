@@ -8,10 +8,9 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class UserQuery
 {
-  [UsePaging(IncludeTotalCount = true)]
   [UseProjection]
-  [UseFiltering]
   [UseSorting]
+  [UseFiltering]
   [QueryAuthorize]
   public IQueryable<User> GetUsers(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
   {
