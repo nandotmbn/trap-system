@@ -8,30 +8,41 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class ContentDeliveryQuery
 {
-	[UseProjection]
+  [UseProjection]
   [UseSorting]
   [UseFiltering]
   [QueryAuthorize]
-	public IQueryable<ContentDelivery> GetContentDeliveries(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  [Pagination(DefaultLimit = 10, MaxLimit = 100)]
+  public IQueryable<ContentDelivery> GetContentDeliveries(string? search, AppDBContext appDBContext)
   {
-    int? itemsToSkip = (page - 1) * limit;
-    
     var query = appDBContext.ContentDeliveries.AsQueryable();
     if (search != null && search != "")
     {
-      query = query.Where(x => EF.Functions.Like(x.Title!.ToLower() + " " + x.Permalink!.ToLower(), $"%{search.ToLower()}%"));
+      query = query.Where(x => EF.Functions.Like(x.Title.ToLower() + " " + x.Permalink.ToLower(), $"%{search.ToLower()}%"));
     }
-
-    query = query.Skip((int)itemsToSkip!).Take(limit);
 
     return query;
   }
 
-	[UseProjection]
-	[QueryAuthorize]
-	public async Task<ContentDelivery?> GetContentDeliveryAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
-	{
-		return await appDBContext.ContentDeliveries.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  [UseProjection]
+  [UseFiltering]
+  [QueryAuthorize]
+  [GraphQLName("countContentDeliveries")]
+  public async Task<int?> CountContentDeliveries(string? search, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    var query = appDBContext.ContentDeliveries.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Title.ToLower() + " " + x.Permalink.ToLower(), $"%{search.ToLower()}%"));
+    }
 
-	}
+    return await query.CountAsync(cancellationToken);
+  }
+
+  [UseProjection]
+  [QueryAuthorize]
+  public async Task<ContentDelivery?> GetContentDeliveryAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    return await appDBContext.ContentDeliveries.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  }
 }

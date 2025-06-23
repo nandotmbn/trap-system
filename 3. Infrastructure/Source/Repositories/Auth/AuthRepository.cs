@@ -24,7 +24,7 @@ public class AuthRepository(IConfiguration configuration, AppDBContext appDBCont
 
       string token = JsonWebTokens.NewJsonWebTokens(user, configuration);
 
-      return new LoginResponse(HttpStatusCode.OK, "Registered successfully", token);
+      return new LoginResponse(HttpStatusCode.OK, "Login successfully", token);
     }
     catch
     {

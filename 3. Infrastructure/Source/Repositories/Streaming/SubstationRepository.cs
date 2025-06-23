@@ -91,7 +91,7 @@ public class SubstationRepository(AppDBContext appDBContext) : ISubstation
       var substation = await Update(substationId, request);
       transaction.Commit();
 
-      return new SubstationResponse(HttpStatusCode.Accepted, "Gardu induk berhasil dihapus", substation);
+      return new SubstationResponse(HttpStatusCode.Accepted, "Gardu induk berhasil diubah", substation);
     }
     catch
     {

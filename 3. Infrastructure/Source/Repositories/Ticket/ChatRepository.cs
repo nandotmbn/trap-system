@@ -96,7 +96,7 @@ public class ChatRepository(AppDBContext appDBContext, IHttpContextAccessor acce
       var chat = await Update(chatId, request);
       transaction.Commit();
 
-      return new ChatResponse(HttpStatusCode.Accepted, "Pesan berhasil dihapus", chat);
+      return new ChatResponse(HttpStatusCode.Accepted, "Pesan berhasil diubah", chat);
     }
     catch
     {

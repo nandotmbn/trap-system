@@ -12,19 +12,31 @@ public class UserQuery
   [UseSorting]
   [UseFiltering]
   [QueryAuthorize]
-  public IQueryable<User> GetUsers(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  [Pagination(DefaultLimit = 10, MaxLimit = 100)]
+  public IQueryable<User> GetUsers(string? search, AppDBContext appDBContext)
   {
-    int? itemsToSkip = (page - 1) * limit;
-    
     var query = appDBContext.Users.AsQueryable();
     if (search != null && search != "")
     {
       query = query.Where(x => EF.Functions.Like(x.FirstName!.ToLower() + " " + x.LastName!.ToLower(), $"%{search.ToLower()}%"));
     }
 
-    query = query.Skip((int)itemsToSkip!).Take(limit);
-
     return query;
+  }
+
+  [UseProjection]
+  [UseFiltering]
+  [QueryAuthorize]
+  [GraphQLName("countUsers")]
+  public async Task<int?> CountUsers(string? search, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    var query = appDBContext.Users.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.FirstName!.ToLower() + " " + x.LastName!.ToLower(), $"%{search.ToLower()}%"));
+    }
+
+    return await query.CountAsync(cancellationToken);
   }
 
   [UseProjection]

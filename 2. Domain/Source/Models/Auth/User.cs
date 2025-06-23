@@ -6,10 +6,10 @@ namespace Domain.Models
 	[JsonConverter(typeof(JsonStringEnumConverter<UserType>))]
 	public enum UserType
 	{
-		Admin,
-		Operator,
-		Supervisor,
-		Manager,
+		ADMIN,
+		OPERATOR,
+		SUPERVISOR,
+		MANAGER,
 	}
 
 	public class User : Mandatory
@@ -27,7 +27,7 @@ namespace Domain.Models
 		public string Password { get; set; } = string.Empty;
 		[PhoneOrEmpty]
 		public string PhoneNumber { get; set; } = string.Empty;
-		public UserType Type { get; set; } = UserType.Operator;
+		public UserType Type { get; set; } = UserType.OPERATOR;
 		
 		public List<Ticket> Tickets { get; set; } = [];
 		public List<Chat> Chats { get; set; } = [];

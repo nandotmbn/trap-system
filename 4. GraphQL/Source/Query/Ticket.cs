@@ -8,25 +8,41 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class TicketQuery
 {
-	[UseProjection]
+  [UseProjection]
   [UseSorting]
   [UseFiltering]
   [QueryAuthorize]
-	public IQueryable<Ticket> GetTickets(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  [Pagination(DefaultLimit = 10, MaxLimit = 100)]
+  public IQueryable<Ticket> GetTickets(string? search, AppDBContext appDBContext)
   {
-    int? itemsToSkip = (page - 1) * limit;
-    
     var query = appDBContext.Tickets.AsQueryable();
-    query = query.Skip((int)itemsToSkip!).Take(limit);
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Operator!.FirstName.ToLower() + " " + x.Operator!.LastName.ToLower(), $"%{search.ToLower()}%"));
+    }
 
     return query;
   }
 
-	[UseProjection]
-	[QueryAuthorize]
-	public async Task<Ticket?> GetTicketAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
-	{
-		return await appDBContext.Tickets.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  [UseProjection]
+  [UseFiltering]
+  [QueryAuthorize]
+  [GraphQLName("countTickets")]
+  public async Task<int?> CountTickets(string? search, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    var query = appDBContext.Tickets.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Operator!.FirstName.ToLower() + " " + x.Operator!.LastName.ToLower(), $"%{search.ToLower()}%"));
+    }
 
-	}
+    return await query.CountAsync(cancellationToken);
+  }
+
+  [UseProjection]
+  [QueryAuthorize]
+  public async Task<Ticket?> GetTicketAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    return await appDBContext.Tickets.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  }
 }

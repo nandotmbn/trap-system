@@ -21,7 +21,7 @@ namespace Infrastructure.Database
             LastName = "Super Admin",
             Username = configuration["SuperUser:Username"]!,
             Password = password,
-            Type = UserType.Admin,
+            Type = UserType.ADMIN,
           }
         );
       }

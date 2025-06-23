@@ -1,7 +1,10 @@
 using System.Text;
 using System.Text.Json;
+using Domain.Models;
 using Domain.Types;
 using Infrastructure.Database;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,13 +20,15 @@ public class ClassificationMessageQuery : BackgroundService
 	private readonly ConnectionFactory _factory;
 	private IConnection? _connection;
 	private IChannel? _channel;
+	private IHubContext<SignalRHub>? _hubContext;
 	private readonly IServiceProvider _serviceProvider;
 	private readonly string queueMessage;
 
-	public ClassificationMessageQuery(ILogger<ClassificationMessageQuery> logger, IServiceProvider serviceProvider, IConfiguration configuration)
+	public ClassificationMessageQuery(ILogger<ClassificationMessageQuery> logger, IServiceProvider serviceProvider, IHubContext<SignalRHub> hubContext, IConfiguration configuration)
 	{
 		_logger = logger;
 		_serviceProvider = serviceProvider;
+		_hubContext = hubContext;
 		_factory = new ConnectionFactory()
 		{
 			HostName = configuration["RabbitMQ:Host"]!,
@@ -34,16 +39,39 @@ public class ClassificationMessageQuery : BackgroundService
 		queueMessage = configuration["RabbitMQ:ClassifyQueue"]!;
 	}
 
-	async public Task HandleMessage()
+	async public Task<Guid> HandleMessage(ClassificationMessage message)
 	{
 		using var scope = _serviceProvider.CreateScope();
 		using var appDBContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
 		using var transaction = await appDBContext.Database.BeginTransactionAsync();
 		try
 		{
+			var id = Guid.NewGuid();
+			string fileName = $"{id}.jpg";
+			if (message.Base64 != null)
+			{
+				byte[] imageBytes = Convert.FromBase64String(message.Base64.Split("base64,")[1]);
+				using var stream = new FileStream($"../5. WebAPI/CDN/{fileName}", FileMode.Create);
+				await stream.WriteAsync(imageBytes);
+			}
+
+			var det = new Detection
+			{
+				Id = id,
+				CameraId = message.StreamId,
+				Classifications = [.. message.Classifications.Select(x => new Classification
+				{
+					Confidence = x.Confidence,
+					Prediction = x.Prediction
+				})],
+			};
+
+			appDBContext.Add(det);
 
 			appDBContext.SaveChanges();
 			transaction.Commit();
+
+			return id;
 		}
 		catch
 		{
@@ -58,6 +86,7 @@ public class ClassificationMessageQuery : BackgroundService
 		_connection = await _factory.CreateConnectionAsync(cancellationToken);
 		_channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
+
 		await _channel.QueueDeclareAsync(queue: queueMessage, durable: true, exclusive: false, autoDelete: false, arguments: null, cancellationToken: cancellationToken);
 
 		var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -71,6 +100,9 @@ public class ClassificationMessageQuery : BackgroundService
 				try
 				{
 					ClassificationMessage q = JsonSerializer.Deserialize<ClassificationMessage>(message)!;
+					Guid res = await HandleMessage(q);
+
+					await _hubContext?.Clients.All.SendAsync($"classify", res)!;
 				}
 				catch { }
 

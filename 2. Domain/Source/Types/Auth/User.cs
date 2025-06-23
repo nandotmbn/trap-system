@@ -36,7 +36,7 @@ namespace Domain.Types
 
   public class UserRequest : SelfRequest
   {
-    public UserType Type { get; set; } = UserType.Operator;
+    public UserType Type { get; set; } = UserType.OPERATOR;
   }
 
   public record UserResponse(HttpStatusCode StatusCode, string Message, User Data);

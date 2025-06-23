@@ -8,30 +8,41 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class DetectionQuery
 {
-	[UseProjection]
+  [UseProjection]
   [UseSorting]
   [UseFiltering]
   [QueryAuthorize]
-	public IQueryable<Detection> GetDetections(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  [Pagination(DefaultLimit = 10, MaxLimit = 100)]
+  public IQueryable<Detection> GetDetections(string? search, AppDBContext appDBContext)
   {
-    int? itemsToSkip = (page - 1) * limit;
-    
     var query = appDBContext.Detections.AsQueryable();
     if (search != null && search != "")
     {
-      query = query.Where(x => EF.Functions.Like(x.Camera!.Name!.ToLower(), $"%{search.ToLower()}%"));
+      query = query.Where(x => EF.Functions.Like(x.Camera!.Name.ToLower(), $"%{search.ToLower()}%"));
     }
-
-    query = query.Skip((int)itemsToSkip!).Take(limit);
 
     return query;
   }
 
-	[UseProjection]
-	[QueryAuthorize]
-	public async Task<Detection?> GetDetectionAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
-	{
-		return await appDBContext.Detections.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  [UseProjection]
+  [UseFiltering]
+  [QueryAuthorize]
+  [GraphQLName("countDetections")]
+  public async Task<int?> CountDetections(string? search, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    var query = appDBContext.Detections.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Camera!.Name.ToLower(), $"%{search.ToLower()}%"));
+    }
 
-	}
+    return await query.CountAsync(cancellationToken);
+  }
+
+  [UseProjection]
+  [QueryAuthorize]
+  public async Task<Detection?> GetDetectionAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    return await appDBContext.Detections.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  }
 }

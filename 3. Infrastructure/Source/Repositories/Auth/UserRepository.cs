@@ -96,7 +96,7 @@ public class UserRepository(AppDBContext appDBContext) : IUser
       var user = await Update(userId, request);
       transaction.Commit();
 
-      return new UserResponse(HttpStatusCode.Accepted, "Pengguna berhasil dihapus", user);
+      return new UserResponse(HttpStatusCode.Accepted, "Pengguna berhasil diubah", user);
     }
     catch
     {

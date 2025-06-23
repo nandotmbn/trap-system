@@ -18,7 +18,7 @@ namespace Domain.Types
     public string Password { get; set; } = string.Empty;
     [Required, MinLength(8), MaxLength(64), Compare(nameof(Password))]
     public string ConfirmPassword { get; set; } = string.Empty;
-		public UserType Type { get; set; } = UserType.Operator;
+		public UserType Type { get; set; } = UserType.OPERATOR;
   }
 
   public record RegistrationResponse(HttpStatusCode StatusCode, string Message, User? Data);

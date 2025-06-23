@@ -8,30 +8,41 @@ namespace GraphQL.Source;
 [ExtendObjectType(typeof(Query))]
 public class SubstationQuery
 {
-	[UseProjection]
+  [UseProjection]
   [UseSorting]
   [UseFiltering]
   [QueryAuthorize]
-	public IQueryable<Substation> GetSubstations(string? search, AppDBContext appDBContext, int page = 1, int limit = int.MaxValue)
+  [Pagination(DefaultLimit = 10, MaxLimit = 100)]
+  public IQueryable<Substation> GetSubstations(string? search, AppDBContext appDBContext)
   {
-    int? itemsToSkip = (page - 1) * limit;
-    
     var query = appDBContext.Substations.AsQueryable();
     if (search != null && search != "")
     {
-      query = query.Where(x => EF.Functions.Like(x.Name!.ToLower() + " " + x.Address!.ToLower(), $"%{search.ToLower()}%"));
+      query = query.Where(x => EF.Functions.Like(x.Name.ToLower() + " " + x.Address.ToLower(), $"%{search.ToLower()}%"));
     }
-
-    query = query.Skip((int)itemsToSkip!).Take(limit);
 
     return query;
   }
 
-	[UseProjection]
-	[QueryAuthorize]
-	public async Task<Substation?> GetSubstationAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
-	{
-		return await appDBContext.Substations.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  [UseProjection]
+  [UseFiltering]
+  [QueryAuthorize]
+  [GraphQLName("countSubstations")]
+  public async Task<int?> CountSubstations(string? search, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    var query = appDBContext.Substations.AsQueryable();
+    if (search != null && search != "")
+    {
+      query = query.Where(x => EF.Functions.Like(x.Name.ToLower() + " " + x.Address.ToLower(), $"%{search.ToLower()}%"));
+    }
 
-	}
+    return await query.CountAsync(cancellationToken);
+  }
+
+  [UseProjection]
+  [QueryAuthorize]
+  public async Task<Substation?> GetSubstationAsync(Guid id, AppDBContext appDBContext, CancellationToken cancellationToken)
+  {
+    return await appDBContext.Substations.FirstOrDefaultAsync(b => b.Id == id, cancellationToken)!;
+  }
 }

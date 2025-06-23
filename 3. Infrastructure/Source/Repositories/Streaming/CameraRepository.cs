@@ -22,6 +22,7 @@ public class CameraRepository(AppDBContext appDBContext) : ICamera
       Password = request.Password,
       Port = request.Port,
       Subtype = request.Subtype,
+      SubstationId = request.SubstationId,
     };
     await appDBContext.AddAsync(camera);
     await appDBContext.SaveChangesAsync();
@@ -86,6 +87,7 @@ public class CameraRepository(AppDBContext appDBContext) : ICamera
     camera.Password = request.Password;
     camera.Port = request.Port;
     camera.Subtype = request.Subtype;
+    camera.SubstationId = request.SubstationId;
 
     appDBContext.Update(camera);
     appDBContext.SaveChanges();
@@ -101,7 +103,7 @@ public class CameraRepository(AppDBContext appDBContext) : ICamera
       var camera = await Update(cameraId, request);
       transaction.Commit();
 
-      return new CameraResponse(HttpStatusCode.Accepted, "Kamera CCTV berhasil dihapus", camera);
+      return new CameraResponse(HttpStatusCode.Accepted, "Kamera CCTV berhasil diubah", camera);
     }
     catch
     {
