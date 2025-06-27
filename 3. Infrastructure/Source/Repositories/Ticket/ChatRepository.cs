@@ -7,19 +7,28 @@ using Infrastructure.Database;
 using Infrastructure.Helpers;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ChatRepository(AppDBContext appDBContext, IHttpContextAccessor accessor) : IChat
+public class ChatRepository(AppDBContext appDBContext, IHttpContextAccessor accessor, IHubContext<SignalRHub> hubContext) : IChat
 {
   async public Task<Chat> Create(ChatRequest request)
   {
+    var ticket = await appDBContext.Tickets
+      .Where(e => e.Id == request.TicketId)
+      .Where(e => !e.IsArchived)
+      .FirstOrDefaultAsync() ?? throw new NotFoundException("Ticket tidak ditemukan");
+
+    if (!ticket.IsOpen) throw new BadRequestException("Ticket sudah ditutup");
+
     var chat = new Chat
     {
       Message = request.Message ?? "",
       Image = request.Image ?? "",
-      CreatedById = UserClaim.GetId(accessor.HttpContext!.User)
+      CreatedById = UserClaim.GetId(accessor.HttpContext!.User),
+      TicketId = request.TicketId
     };
     await appDBContext.AddAsync(chat);
     await appDBContext.SaveChangesAsync();
@@ -33,6 +42,8 @@ public class ChatRepository(AppDBContext appDBContext, IHttpContextAccessor acce
     try
     {
       var chat = await Create(request);
+      await hubContext?.Clients.All.SendAsync("ticket-" + request.TicketId, "push")!;
+
       transaction.Commit();
       return new ChatResponse(HttpStatusCode.Created, "Pesan berhasil dibuat", chat);
     }
@@ -72,6 +83,13 @@ public class ChatRepository(AppDBContext appDBContext, IHttpContextAccessor acce
 
   async public Task<Chat> Update(Guid chatId, ChatRequest request)
   {
+    var ticket = await appDBContext.Tickets
+      .Where(e => e.Id == request.TicketId)
+      .Where(e => !e.IsArchived)
+      .FirstOrDefaultAsync() ?? throw new NotFoundException("Ticket tidak ditemukan");
+
+    if (!ticket.IsOpen) throw new BadRequestException("Ticket sudah ditutup");
+
     var userId = UserClaim.GetId(accessor.HttpContext!.User);
     var chat = await appDBContext.Chats
       .Where(e => e.Id == chatId)

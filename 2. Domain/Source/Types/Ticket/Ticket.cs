@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Domain.Models;
 
@@ -6,6 +5,7 @@ namespace Domain.Types
 {
 	public class TicketRequest
 	{
+		public TicketStatus Status { get; set; }
 		public Guid DetectionId { get; set; }
 	}
 	public class TicketStatusRequest

@@ -4,7 +4,6 @@ using Domain.Models;
 using Domain.Types;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -67,6 +66,10 @@ public class ClassificationMessageQuery : BackgroundService
 			};
 
 			appDBContext.Add(det);
+
+			// await appDBContext.Detections.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
+			// await appDBContext.Classifications.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
+			// await appDBContext.Tickets.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
 
 			appDBContext.SaveChanges();
 			transaction.Commit();

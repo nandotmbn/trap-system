@@ -8,10 +8,8 @@ namespace RESTAPI.Controllers
   [ApiController]
   [Authorize]
   [Route("api/cdn")]
-  public class ContentDeliveryController(IContentDelivery _cdn) : ControllerBase
+  public class ContentDeliveryController(IContentDelivery cdn) : ControllerBase
   {
-    private readonly IContentDelivery cdn = _cdn;
-
     [HttpGet]
     public async Task<ActionResult<GetContentDeliveriesResponse>> Login([FromQuery] string? title,  [FromQuery] bool isArchived, [FromQuery] int limit = 10, [FromQuery] int page = 1)
     {
@@ -26,17 +24,17 @@ namespace RESTAPI.Controllers
       return Ok(result);
     }
 
-    [HttpPost("")]
-    public async Task<ActionResult<GetContentDeliveryByIdResponse>> ResendActivation(IFormFile formFile)
+    [HttpPost]
+    public async Task<ActionResult<GetContentDeliveryByIdResponse>> ResendActivation(IFormFile file)
     {
-      var result = await cdn.CreateContentDelivery(formFile);
+      var result = await cdn.CreateContentDelivery(file);
       return Ok(result);
     }
 
     [HttpPut("cdnId/{cdnId}")]
-    public async Task<ActionResult<GetContentDeliveryByIdResponse>> UpdateUser([FromRoute] Guid cdnId, IFormFile formFile)
+    public async Task<ActionResult<GetContentDeliveryByIdResponse>> UpdateUser([FromRoute] Guid cdnId, IFormFile file)
     {
-      var result = await cdn.UpdateContentDelivery(cdnId, formFile);
+      var result = await cdn.UpdateContentDelivery(cdnId, file);
       return result;
     }
 

@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 		});
 	});
 
+builder.Services.SignalRService(builder.Configuration);
 builder.Services.ScopeService(builder.Configuration);
 builder.Services.DatabaseServices(builder.Configuration);
 builder.Services.AuthenticationService(builder.Configuration);

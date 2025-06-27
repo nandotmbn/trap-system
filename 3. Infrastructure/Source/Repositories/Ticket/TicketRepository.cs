@@ -36,9 +36,10 @@ public class TicketRepository(AppDBContext appDBContext, IHttpContextAccessor ac
     var ticket = new Ticket
     {
       DetectionId = request.DetectionId,
+      TicketNumber = RandomNumeric.Generate(6),
       IsOpen = true,
       OperatorId = userId,
-      Status = TicketStatus.Pending
+      Status = request.Status
     };
     await appDBContext.AddAsync(ticket);
     await appDBContext.SaveChangesAsync();
@@ -102,6 +103,7 @@ public class TicketRepository(AppDBContext appDBContext, IHttpContextAccessor ac
 
     ticket.IsOpen = !ticket.IsOpen;
     appDBContext.Update(ticket);
+    appDBContext.SaveChanges();
 
     return new TicketResponse(HttpStatusCode.Accepted, "Status tiket berhasil diubah!", ticket);
   }
