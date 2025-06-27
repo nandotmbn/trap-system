@@ -13,6 +13,79 @@ namespace Infrastructure.Repositories;
 
 public class TicketRepository(AppDBContext appDBContext, IHttpContextAccessor accessor) : ITicket
 {
+    public IQueryable<Ticket> Query(string? search, string? ticketNumber, bool? isOpen, TicketStatus? ticketStatus, Guid? operatorId, Guid? detectionId)
+  {
+    var query = appDBContext.Tickets.AsQueryable();
+    if (search != null)
+    {
+      query = query.Where(x => EF.Functions.Like(
+        x.TicketNumber.ToLower() + " " +
+        x.Operator!.FirstName.ToLower() + " " +
+        x.Operator.LastName.ToLower() + " ",
+        $"%{search.ToLower()}%"));
+    }
+    if (ticketNumber != null)
+    {
+      query = query.Where(x => EF.Functions.Like(x.TicketNumber.ToLower(), $"%{ticketNumber.ToLower()}%"));
+    }
+    if (isOpen != null)
+    {
+      query = query.Where(x => x.IsOpen == isOpen);
+    }
+    if (operatorId != null)
+    {
+      query = query.Where(x => x.OperatorId == operatorId);
+    }
+    if (detectionId != null)
+    {
+      query = query.Where(x => x.DetectionId == detectionId);
+    }
+
+    return query;
+  }
+
+  async public Task<TicketResponse> GetTicket(Guid chatId)
+  {
+    var user = await appDBContext.Tickets
+      .Where(e => e.Id == chatId)
+      .Where(e => !e.IsArchived)
+      .FirstOrDefaultAsync() ?? throw new NotFoundException("Tiket tidak ditemukan");
+
+    return new TicketResponse(HttpStatusCode.OK, "Tiket berhasil didapatkan", user);
+  }
+  async public Task<TicketsResponse> GetTickets(string? search, string? ticketNumber, bool? isOpen, TicketStatus? ticketStatus, Guid? operatorId, Guid? detectionId, SortType sortType = SortType.Asc, TicketAttributes sortAttribute = TicketAttributes.CreatedAt, int page = 1, int limit = 10)
+  {
+    int itemsToSkip = (page - 1) * limit;
+    var query = Query(search, ticketNumber, isOpen, ticketStatus, operatorId, detectionId); ;
+
+    query = (sortType, sortAttribute) switch
+    {
+      (SortType.Asc, TicketAttributes.TicketNumber) => query.OrderBy(q => q.TicketNumber),
+      (SortType.Asc, TicketAttributes.IsOpen) => query.OrderBy(q => q.IsOpen),
+      (SortType.Asc, TicketAttributes.Status) => query.OrderBy(q => q.Status),
+      (SortType.Asc, TicketAttributes.Operator) => query.OrderBy(q => q.Operator!.FirstName),
+      (SortType.Asc, TicketAttributes.CreatedAt) => query.OrderBy(q => q.CreatedAt),
+      (SortType.Asc, TicketAttributes.UpdatedAt) => query.OrderBy(q => q.UpdatedAt),
+      (SortType.Desc, TicketAttributes.TicketNumber) => query.OrderByDescending(q => q.TicketNumber),
+      (SortType.Desc, TicketAttributes.IsOpen) => query.OrderByDescending(q => q.IsOpen),
+      (SortType.Desc, TicketAttributes.Status) => query.OrderByDescending(q => q.Status),
+      (SortType.Desc, TicketAttributes.Operator) => query.OrderByDescending(q => q.Operator!.FirstName),
+      (SortType.Desc, TicketAttributes.CreatedAt) => query.OrderByDescending(q => q.CreatedAt),
+      (SortType.Desc, TicketAttributes.UpdatedAt) => query.OrderByDescending(q => q.UpdatedAt),
+      _ => sortType == SortType.Asc ? query.OrderBy(q => q.CreatedAt) : query.OrderByDescending(q => q.CreatedAt)
+    };
+
+    query = query.Where(e => !e.IsArchived).Skip(itemsToSkip!).Take(limit!);
+    var entities = await query.ToListAsync();
+    return new TicketsResponse(HttpStatusCode.OK, "Tiket berhasil didapatkan", entities);
+  }
+  async public Task<CountResponse> CountTickets(string? search, string? ticketNumber, bool? isOpen, TicketStatus? ticketStatus, Guid? operatorId, Guid? detectionId)
+  {
+    var query = Query(search, ticketNumber, isOpen, ticketStatus, operatorId, detectionId); ;
+    var count = await query.Where(e => !e.IsArchived).CountAsync();
+    return new CountResponse(HttpStatusCode.OK, "Total berhasil didapatkan", count);
+  }
+
   async public Task<TicketResponse> ChangeTicketStatus(Guid ticketId, TicketStatusRequest request)
   {
     var ticket = await appDBContext.Tickets
@@ -21,6 +94,7 @@ public class TicketRepository(AppDBContext appDBContext, IHttpContextAccessor ac
 
     ticket.Status = request.Status;
     appDBContext.Update(ticket);
+    appDBContext.SaveChanges();
 
     return new TicketResponse(HttpStatusCode.Accepted, "Status tiket berhasil diubah!", ticket);
   }

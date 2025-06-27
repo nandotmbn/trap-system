@@ -4,7 +4,6 @@ using Domain.Models;
 
 namespace Domain.Types
 {
-
   public class SubstationRequest
   {
     [Required, MaxLength(20)]

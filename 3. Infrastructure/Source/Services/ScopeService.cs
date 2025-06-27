@@ -9,18 +9,6 @@ namespace Infrastructure.Services
 	{
 		public static IServiceCollection ScopeService(this IServiceCollection services, IConfiguration configuration)
 		{
-			// var channel = RedisChannel.Literal("SignalR");
-
-			// services.AddSignalR();
-			// services.AddSignalR().AddStackExchangeRedis(configuration["Redis:ConnectionString"]!, options =>
-			// {
-			// 	options.Configuration.ChannelPrefix = channel;
-			// 	options.Configuration.ConnectTimeout = 10000;
-			// 	options.Configuration.SyncTimeout = 10000;
-			// 	options.Configuration.KeepAlive = 180;
-			// 	options.Configuration.DefaultDatabase = 0;
-			// });
-
 			services.AddScoped<IAuth, AuthRepository>();
 			services.AddScoped<IUser, UserRepository>();
 			services.AddScoped<IMine, MineRepository>();
@@ -28,6 +16,8 @@ namespace Infrastructure.Services
 			services.AddScoped<ICamera, CameraRepository>();
 			services.AddScoped<ITicket, TicketRepository>();
 			services.AddScoped<IChat, ChatRepository>();
+			services.AddScoped<IDetection, DetectionRepository>();
+			services.AddScoped<IClassification, ClassificationRepository>();
 			services.AddScoped<IContentDelivery, ContentDeliveryRepository>();
 
 			return services;

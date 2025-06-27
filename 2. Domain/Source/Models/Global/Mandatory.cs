@@ -6,9 +6,7 @@ namespace Domain.Models
 	{
 		[JsonIgnore]
     public bool IsArchived {get; set;} = false;
-		[JsonIgnore]
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-		[JsonIgnore]
 		public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 	}
 }
