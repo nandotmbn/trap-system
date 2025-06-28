@@ -19,7 +19,7 @@ public class ClassificationMessageQuery : BackgroundService
 	private readonly ConnectionFactory _factory;
 	private IConnection? _connection;
 	private IChannel? _channel;
-	private IHubContext<SignalRHub>? _hubContext;
+	private readonly IHubContext<SignalRHub>? _hubContext;
 	private readonly IServiceProvider _serviceProvider;
 	private readonly string queueMessage;
 
@@ -50,7 +50,7 @@ public class ClassificationMessageQuery : BackgroundService
 			if (message.Base64 != null)
 			{
 				byte[] imageBytes = Convert.FromBase64String(message.Base64.Split("base64,")[1]);
-				using var stream = new FileStream($"../5. WebAPI/CDN/{fileName}", FileMode.Create);
+				using var stream = new FileStream($"CDN/{fileName}", FileMode.Create);
 				await stream.WriteAsync(imageBytes);
 			}
 
@@ -66,10 +66,6 @@ public class ClassificationMessageQuery : BackgroundService
 			};
 
 			appDBContext.Add(det);
-
-			// await appDBContext.Detections.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
-			// await appDBContext.Classifications.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
-			// await appDBContext.Tickets.Where(e => e.IsArchived == false).ExecuteDeleteAsync();
 
 			appDBContext.SaveChanges();
 			transaction.Commit();
@@ -106,20 +102,20 @@ public class ClassificationMessageQuery : BackgroundService
 					Guid res = await HandleMessage(q);
 
 					await _hubContext?.Clients.All.SendAsync($"classify", res)!;
-				}
-				catch { }
+					await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
 
-				await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-				_logger.LogInformation(" [✔] Message processed successfully.");
-				await Task.Yield(); // Ensure async execution
+					_logger.LogInformation(" [✔] Message processed successfully.");
+				}
+				catch (Exception ex)
+				{
+					_logger.LogInformation("[x] Processing failed:" + ex.Message);
+				}
+
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($" [!] Processing failed: {ex.Message}");
-
-				// Reject the message and requeue it for retry
-				await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true);
-				_logger.LogWarning(" [↩] Message requeued.");
+				_logger.LogError($"[x] Processing failed: {ex.Message}");
+				await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
 			}
 		};
 

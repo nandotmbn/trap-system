@@ -1,0 +1,62 @@
+version: '3.4'
+
+services:
+  trap-webapi:
+    image: trap-webapi
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: .
+      dockerfile: Dockerfile.WebAPI
+      network: "host"
+    ports:
+      - 4640:80
+      - 4641:443
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=orlando
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certificates/https.aspnetapp.pfx
+    volumes:
+      - trap-volume:/app/CDN
+  
+  trap-graphql:
+    image: trap-graphql
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: .
+      dockerfile: Dockerfile.GraphQL
+      network: "host"
+    ports:
+      - 4660:80
+      - 4661:443
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=orlando
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certificates/https.aspnetapp.pfx
+    volumes:
+      - trap-volume:/app/CDN
+  
+  trap-eventdriven:
+    image: trap-eventdriven
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    build:
+      context: .
+      dockerfile: Dockerfile.EventDriven
+      network: "host"
+    ports:
+      - 4650:80
+      - 4651:443
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=orlando
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/certificates/https.aspnetapp.pfx
+    volumes:
+      - trap-volume:/app/CDN
+
+volumes:
+  trap-volume:

@@ -1,0 +1,34 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet restore "./5_WebAPI/WebAPI.csproj"
+COPY . .
+WORKDIR "/src/."
+
+RUN dotnet build "./5_WebAPI/WebAPI.csproj" -c Release -o /app/build
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+WORKDIR "/src/5_WebAPI"
+# RUN rm -rf appsettings.Development.json
+# RUN dotnet ef database update
+
+FROM build AS publish
+RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish /p:UseWebAPI=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+RUN mkdir -p /app/certificates
+RUN mkdir -p /app/CDN
+RUN mkdir -p /app/Font
+RUN mkdir -p /app/Log
+
+COPY 5_WebAPI/certificates/https.aspnetapp.pfx /app/certificates/
+
+ENTRYPOINT ["dotnet", "WebAPI.dll"]

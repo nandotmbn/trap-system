@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "5. WebAPI\WebAPI.csproj", "{E900B6BB-E8EE-436C-8D41-AC69A717BB60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "5_WebAPI\WebAPI.csproj", "{E900B6BB-E8EE-436C-8D41-AC69A717BB60}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "3. Infrastructure\Infrastructure.csproj", "{4530E291-4ED7-44D4-8117-7A95B58B5D63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "3_Infrastructure\Infrastructure.csproj", "{4530E291-4ED7-44D4-8117-7A95B58B5D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "2. Domain\Domain.csproj", "{2608F2BB-BDA1-475B-BDF0-831AFB1C00E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "2_Domain\Domain.csproj", "{2608F2BB-BDA1-475B-BDF0-831AFB1C00E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQL", "4. GraphQL\GraphQL.csproj", "{DF7CD84A-C617-4624-8C21-C29141C14F86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQL", "4_GraphQL\GraphQL.csproj", "{DF7CD84A-C617-4624-8C21-C29141C14F86}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "AppHost\AppHost.csproj", "{20EAAE77-F4F4-4363-AC3B-3A2A4BE18041}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "ServiceDefaults\ServiceDefaults.csproj", "{31DE17AF-8762-4930-B286-41DC8620373F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven", "6. EventDriven\EventDriven.csproj", "{2C07E713-482C-474B-BD58-BD7F2335B022}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventDriven", "6_EventDriven\EventDriven.csproj", "{2C07E713-482C-474B-BD58-BD7F2335B022}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

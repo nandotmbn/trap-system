@@ -9,7 +9,7 @@ fi
 # Arguments
 VERSION="$1"
 
-cd '5. WebAPI'
+cd '5_WebAPI'
 dotnet ef migrations add $VERSION
 dotnet ef database update
 cd ..

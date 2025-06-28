@@ -23,11 +23,11 @@
   ],
   "classifications": [
     {
-      "prediction": "common long-tailed macaque",
+      "prediction": "sumobito",
       "confidence": 0.0826631709933281
     },
     {
-      "prediction": "vervet monkey",
+      "prediction": "monkey",
       "confidence": 0.28682759404182434
     },
     {
